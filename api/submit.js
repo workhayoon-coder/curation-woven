@@ -41,7 +41,7 @@ export default async function handler(req, res) {
                 properties: {
                     '인입 일자': { date: { start: new Date().toISOString() } },
                     '업체명': { title: [{ text: { content: brandName || '' } }] },
-                    ...(brandCategory ? { '브랜드 카테고리': { select: { name: brandCategory } } } : {}),
+                    '브랜드 카테고리': { multi_select: brandCategory ? [{ name: brandCategory }] : [] },
                     '성함': { rich_text: [{ text: { content: managerName || '' } }] },
                     '전화번호': { rich_text: [{ text: { content: phoneNumber || '' } }] },
                     '신청 상품': {
