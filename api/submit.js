@@ -1,5 +1,4 @@
 export default async function handler(req, res) {
-    // 1. 모든 도메인에서의 접근을 허용 (CORS 설정 강화)
     res.setHeader('Access-Control-Allow-Credentials', true);
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
@@ -7,19 +6,17 @@ export default async function handler(req, res) {
         'Access-Control-Allow-Headers',
         'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
     );
-
-    // 2. 브라우저의 예비 요청(OPTIONS) 무조건 통과시키기
     if (req.method === 'OPTIONS') {
         res.status(200).end();
         return;
     }
-
     if (req.method !== 'POST') {
         return res.status(405).json({ error: 'Method not allowed' });
     }
 
     const {
         brandName,
+        brandCategory,
         managerName,
         phoneNumber,
         selectedSwatches,
@@ -44,6 +41,7 @@ export default async function handler(req, res) {
                 properties: {
                     '인입 일자': { date: { start: new Date().toISOString() } },
                     '업체명': { title: [{ text: { content: brandName || '' } }] },
+                    '브랜드 카테고리': { select: { name: brandCategory || '' } },
                     '성함': { rich_text: [{ text: { content: managerName || '' } }] },
                     '전화번호': { rich_text: [{ text: { content: phoneNumber || '' } }] },
                     '신청 상품': {
@@ -57,10 +55,8 @@ export default async function handler(req, res) {
                 }
             })
         });
-
         const result = await response.json();
         if (!response.ok) throw new Error(result.message || 'Notion API Error');
-
         return res.status(200).json({ success: true });
     } catch (err) {
         return res.status(500).json({ error: err.message });
