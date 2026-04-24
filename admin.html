@@ -27,6 +27,33 @@
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { background: var(--bg); color: var(--text); font-family: 'Pretendard', 'Noto Sans KR', sans-serif; font-weight: 400; min-height: 100vh; }
 
+  /* ── Lock screen ── */
+  #lockScreen {
+    position: fixed; inset: 0; background: var(--bg);
+    display: flex; align-items: center; justify-content: center; z-index: 9999;
+  }
+  .lock-box {
+    background: var(--white); border: 1px solid var(--border); border-radius: 16px;
+    padding: 40px 36px; width: 340px; text-align: center;
+  }
+  .lock-logo { font-weight: 700; font-size: 18px; letter-spacing: 2px; margin-bottom: 6px; }
+  .lock-sub  { font-size: 12px; color: var(--sub); margin-bottom: 28px; }
+  .lock-input {
+    width: 100%; border: 1px solid var(--border); border-radius: 8px;
+    padding: 12px 14px; font-size: 14px; font-family: 'DM Mono', monospace;
+    outline: none; text-align: center; letter-spacing: 4px;
+    transition: border-color .2s; background: var(--bg);
+  }
+  .lock-input:focus { border-color: var(--text); }
+  .lock-input.error { border-color: var(--red); }
+  .lock-btn {
+    width: 100%; margin-top: 12px; padding: 12px;
+    background: var(--text); color: #fff; border: none; border-radius: 8px;
+    font-size: 14px; font-weight: 600; cursor: pointer; transition: opacity .2s;
+  }
+  .lock-btn:hover { opacity: .8; }
+  .lock-error { font-size: 12px; color: var(--red); margin-top: 8px; height: 16px; }
+
   /* ── Header ── */
   header {
     background: var(--white); border-bottom: 1px solid var(--border);
@@ -146,6 +173,18 @@
 </style>
 </head>
 <body>
+
+<!-- Lock Screen -->
+<div id="lockScreen">
+  <div class="lock-box">
+    <div class="lock-logo">WITH AM</div>
+    <div class="lock-sub">Curation Analytics · 관리자 전용</div>
+    <input class="lock-input" type="password" id="pwInput" placeholder="비밀번호 입력" maxlength="20"
+      onkeydown="if(event.key==='Enter') checkPw()">
+    <button class="lock-btn" onclick="checkPw()">확인</button>
+    <div class="lock-error" id="pwError"></div>
+  </div>
+</div>
 
 <header>
   <div>
@@ -508,7 +547,25 @@ function renderDeviceFabric() {
     </div>`;
 }
 
-loadData();
+// Lock Screen
+const PW = 'am9054';
+function checkPw() {
+  const val = document.getElementById('pwInput').value;
+  if (val === PW) {
+    document.getElementById('lockScreen').style.display = 'none';
+    loadData();
+  } else {
+    const input = document.getElementById('pwInput');
+    const err   = document.getElementById('pwError');
+    input.classList.add('error');
+    err.textContent = '비밀번호가 올바르지 않습니다.';
+    input.value = '';
+    setTimeout(() => { input.classList.remove('error'); err.textContent = ''; }, 2000);
+  }
+}
+
+
+// loadData는 로그인 후 checkPw에서 호출
 </script>
 </body>
 </html>
