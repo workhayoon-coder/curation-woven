@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AM Curation · Analytics</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Bebas+Neue&family=Noto+Sans+KR:wght@300;400;500&display=swap');
+
+  :root {
+    --bg:       #0e0e0c;
+    --bg2:      #161614;
+    --bg3:      #1e1e1b;
+    --border:   #2a2a26;
+    --text:     #e8e4dc;
+    --muted:    #6a6860;
+    --accent:   #c8b896;
+    --green:    #7ab87a;
+    --red:      #c87a7a;
+    --yellow:   #c8b87a;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Sans KR', sans-serif;
+    font-weight: 300;
+    min-height: 100vh;
+  }
+
+  /* ── Header ── */
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 32px;
+    border-bottom: 1px solid var(--border);
+    position: sticky; top: 0;
+    background: var(--bg);
+    z-index: 100;
+  }
+  .header-left { display: flex; align-items: baseline; gap: 12px; }
+  .logo { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 3px; color: var(--accent); }
+  .logo-sub { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; }
+  .header-right { display: flex; align-items: center; gap: 16px; }
+  .last-updated { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted); }
+  .refresh-btn {
+    font-family: 'DM Mono', monospace; font-size: 11px;
+    background: transparent; border: 1px solid var(--border);
+    color: var(--muted); padding: 6px 14px; cursor: pointer;
+    letter-spacing: 1px; text-transform: uppercase;
+    transition: all .2s;
+  }
+  .refresh-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* ── Layout ── */
+  main { padding: 32px; max-width: 1200px; margin: 0 auto; }
+
+  /* ── Date Filter ── */
+  .filter-row {
+    display: flex; gap: 8px; margin-bottom: 32px; align-items: center;
+  }
+  .filter-btn {
+    font-family: 'DM Mono', monospace; font-size: 11px;
+    background: transparent; border: 1px solid var(--border);
+    color: var(--muted); padding: 7px 16px; cursor: pointer;
+    letter-spacing: 1px; text-transform: uppercase; transition: all .2s;
+  }
+  .filter-btn.active, .filter-btn:hover { border-color: var(--accent); color: var(--accent); background: rgba(200,184,150,.06); }
+  .filter-sep { width: 1px; height: 20px; background: var(--border); margin: 0 4px; }
+
+  /* ── KPI Cards ── */
+  .kpi-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1px; background: var(--border); margin-bottom: 32px; }
+  .kpi-card { background: var(--bg2); padding: 24px 20px; }
+  .kpi-label { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted); letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 12px; }
+  .kpi-value { font-family: 'Bebas Neue', sans-serif; font-size: 40px; color: var(--text); line-height: 1; }
+  .kpi-sub { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted); margin-top: 6px; }
+  .kpi-value.green { color: var(--green); }
+  .kpi-value.yellow { color: var(--yellow); }
+
+  /* ── Section Title ── */
+  .section-title {
+    font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted);
+    letter-spacing: 2px; text-transform: uppercase; margin-bottom: 16px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .section-title::after { content:''; flex:1; height:1px; background:var(--border); }
+
+  /* ── Two-col ── */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--border); margin-bottom: 1px; }
+  .panel { background: var(--bg2); padding: 24px; }
+
+  /* ── Bar Chart ── */
+  .bar-list { display: flex; flex-direction: column; gap: 10px; }
+  .bar-item { display: flex; align-items: center; gap: 12px; }
+  .bar-label { font-size: 12px; color: var(--text); width: 80px; flex-shrink: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .bar-track { flex: 1; height: 6px; background: var(--bg3); border-radius: 2px; overflow: hidden; }
+  .bar-fill { height: 100%; background: var(--accent); border-radius: 2px; transition: width .6s cubic-bezier(.16,1,.3,1); }
+  .bar-fill.green { background: var(--green); }
+  .bar-count { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted); width: 32px; text-align: right; flex-shrink: 0; }
+
+  /* ── Funnel ── */
+  .funnel { display: flex; flex-direction: column; gap: 0; }
+  .funnel-step { display: flex; align-items: center; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--border); }
+  .funnel-step:last-child { border-bottom: none; }
+  .funnel-num { font-family: 'Bebas Neue', sans-serif; font-size: 28px; color: var(--text); width: 60px; text-align: right; flex-shrink: 0; }
+  .funnel-info { flex: 1; }
+  .funnel-name { font-size: 12px; color: var(--text); }
+  .funnel-bar-wrap { margin-top: 6px; height: 3px; background: var(--bg3); border-radius: 2px; }
+  .funnel-bar { height: 100%; background: var(--accent); border-radius: 2px; transition: width .6s cubic-bezier(.16,1,.3,1); }
+  .funnel-rate { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted); width: 44px; text-align: right; flex-shrink: 0; }
+
+  /* ── Event Log Table ── */
+  .log-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  .log-table th {
+    font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted);
+    letter-spacing: 1px; text-transform: uppercase; padding: 10px 12px;
+    text-align: left; border-bottom: 1px solid var(--border); font-weight: 400;
+  }
+  .log-table td { padding: 10px 12px; border-bottom: 1px solid var(--border); color: var(--text); vertical-align: middle; }
+  .log-table tr:last-child td { border-bottom: none; }
+  .log-table tr:hover td { background: rgba(255,255,255,.02); }
+  .tag {
+    font-family: 'DM Mono', monospace; font-size: 10px; padding: 3px 8px;
+    border-radius: 2px; letter-spacing: .5px; display: inline-block;
+  }
+  .tag.fabric_click    { background: rgba(200,184,150,.12); color: var(--accent); }
+  .tag.fabric_hover    { background: rgba(122,184,122,.12); color: var(--green); }
+  .tag.modal_image_swipe { background: rgba(200,184,122,.12); color: var(--yellow); }
+  .tag.consult_click   { background: rgba(200,122,122,.2);   color: var(--red); }
+  .tag.modal_close     { background: rgba(106,104,96,.2);    color: var(--muted); }
+  .tag.form_submit     { background: rgba(200,122,122,.3);   color: var(--red); }
+  .device-badge {
+    font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted);
+    border: 1px solid var(--border); padding: 2px 6px; border-radius: 2px;
+  }
+
+  /* ── Loading / Empty ── */
+  .loading {
+    display: flex; align-items: center; justify-content: center;
+    padding: 60px; color: var(--muted);
+    font-family: 'DM Mono', monospace; font-size: 12px; letter-spacing: 1px;
+  }
+  .spinner {
+    width: 16px; height: 16px; border: 1px solid var(--border);
+    border-top-color: var(--accent); border-radius: 50%;
+    animation: spin .8s linear infinite; margin-right: 12px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ── Scrollable log ── */
+  .log-wrap { max-height: 400px; overflow-y: auto; }
+  .log-wrap::-webkit-scrollbar { width: 4px; }
+  .log-wrap::-webkit-scrollbar-track { background: transparent; }
+  .log-wrap::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  @media (max-width: 768px) {
+    main { padding: 16px; }
+    .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+    .two-col { grid-template-columns: 1fr; }
+    header { padding: 16px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-left">
+    <span class="logo">WITH AM</span>
+    <span class="logo-sub">Curation Analytics</span>
+  </div>
+  <div class="header-right">
+    <span class="last-updated" id="lastUpdated">—</span>
+    <button class="refresh-btn" onclick="loadData()">↻ 새로고침</button>
+  </div>
+</header>
+
+<main>
+  <!-- Date Filter -->
+  <div class="filter-row">
+    <button class="filter-btn active" data-days="1" onclick="setFilter(this, 1)">오늘</button>
+    <button class="filter-btn" data-days="7" onclick="setFilter(this, 7)">7일</button>
+    <button class="filter-btn" data-days="30" onclick="setFilter(this, 30)">30일</button>
+    <button class="filter-btn" data-days="0" onclick="setFilter(this, 0)">전체</button>
+  </div>
+
+  <!-- KPI -->
+  <div class="kpi-grid" id="kpiGrid">
+    <div class="loading"><div class="spinner"></div>로딩 중</div>
+  </div>
+
+  <!-- Fabric Rankings + Funnel -->
+  <p class="section-title">원단별 반응</p>
+  <div class="two-col" style="margin-bottom:1px;">
+    <div class="panel">
+      <p class="section-title" style="margin-bottom:20px;">클릭 순위</p>
+      <div class="bar-list" id="clickRank"><div class="loading" style="padding:20px 0;"><div class="spinner"></div>로딩 중</div></div>
+    </div>
+    <div class="panel">
+      <p class="section-title" style="margin-bottom:20px;">호버 순위</p>
+      <div class="bar-list" id="hoverRank"><div class="loading" style="padding:20px 0;"><div class="spinner"></div>로딩 중</div></div>
+    </div>
+  </div>
+
+  <!-- Funnel + Device -->
+  <div class="two-col" style="margin-bottom:32px;">
+    <div class="panel">
+      <p class="section-title" style="margin-bottom:20px;">전환 퍼널</p>
+      <div class="funnel" id="funnelPanel"><div class="loading" style="padding:20px 0;"><div class="spinner"></div>로딩 중</div></div>
+    </div>
+    <div class="panel">
+      <p class="section-title" style="margin-bottom:20px;">디바이스 비율</p>
+      <div id="devicePanel"><div class="loading" style="padding:20px 0;"><div class="spinner"></div>로딩 중</div></div>
+    </div>
+  </div>
+
+  <!-- Event Log -->
+  <p class="section-title">최근 이벤트 로그</p>
+  <div class="panel" style="padding:0;">
+    <div class="log-wrap">
+      <table class="log-table">
+        <thead>
+          <tr>
+            <th>시각</th>
+            <th>이벤트</th>
+            <th>원단</th>
+            <th>디바이스</th>
+            <th>세션</th>
+            <th>Extra</th>
+          </tr>
+        </thead>
+        <tbody id="logBody"><tr><td colspan="6"><div class="loading"><div class="spinner"></div>로딩 중</div></td></tr></tbody>
+      </table>
+    </div>
+  </div>
+</main>
+
+<script>
+// ── Config ──────────────────────────────────────────────────
+const NOTION_TOKEN    = prompt('Notion API 토큰을 입력하세요 (secret_...)') || '';
+const NOTION_DB_ID    = '34b563728910804f9033d157a9cfdcef';
+let   FILTER_DAYS     = 1;
+let   allEvents       = [];
+
+// ── Date Filter ─────────────────────────────────────────────
+function setFilter(btn, days) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  FILTER_DAYS = days;
+  renderAll();
+}
+
+function filterByDate(events) {
+  if (FILTER_DAYS === 0) return events;
+  const cutoff = new Date();
+  cutoff.setDate(cutoff.getDate() - FILTER_DAYS);
+  return events.filter(e => new Date(e.timestamp) >= cutoff);
+}
+
+// ── Fetch from Notion ────────────────────────────────────────
+async function fetchAllPages() {
+  let results = [];
+  let cursor  = undefined;
+  do {
+    const body = { page_size: 100, sorts: [{ property: 'timestamp', direction: 'descending' }] };
+    if (cursor) body.start_cursor = cursor;
+    const res = await fetch(`https://api.notion.com/v1/databases/${NOTION_DB_ID}/query`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${NOTION_TOKEN}`,
+        'Content-Type': 'application/json',
+        'Notion-Version': '2022-06-28',
+      },
+      body: JSON.stringify(body),
+    });
+    const data = await res.json();
+    results = results.concat(data.results || []);
+    cursor  = data.has_more ? data.next_cursor : undefined;
+  } while (cursor);
+  return results;
+}
+
+function parseEvents(pages) {
+  return pages.map(p => {
+    const props = p.properties;
+    return {
+      id:          p.id,
+      event_type:  props.event_type?.select?.name  || '',
+      fabric_name: props.fabric_name?.title?.[0]?.plain_text || '',
+      fabric_id:   props.fabric_id?.rich_text?.[0]?.plain_text || '',
+      timestamp:   props.timestamp?.date?.start || '',
+      session_id:  props.session_id?.rich_text?.[0]?.plain_text || '',
+      device_type: props.device_type?.select?.name || '',
+      extra:       props.extra?.rich_text?.[0]?.plain_text || '',
+    };
+  });
+}
+
+async function loadData() {
+  document.getElementById('lastUpdated').textContent = '로딩 중…';
+  try {
+    const pages = await fetchAllPages();
+    allEvents   = parseEvents(pages);
+    renderAll();
+    document.getElementById('lastUpdated').textContent =
+      '업데이트 ' + new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
+  } catch(e) {
+    document.getElementById('lastUpdated').textContent = '오류: ' + e.message;
+  }
+}
+
+// ── Render All ───────────────────────────────────────────────
+function renderAll() {
+  const events = filterByDate(allEvents);
+  renderKPI(events);
+  renderClickRank(events);
+  renderHoverRank(events);
+  renderFunnel(events);
+  renderDevice(events);
+  renderLog(events);
+}
+
+// ── KPI ─────────────────────────────────────────────────────
+function renderKPI(events) {
+  const clicks   = events.filter(e => e.event_type === 'fabric_click').length;
+  const hovers   = events.filter(e => e.event_type === 'fabric_hover').length;
+  const swipes   = events.filter(e => e.event_type === 'modal_image_swipe').length;
+  const consults = events.filter(e => e.event_type === 'consult_click').length;
+  const submits  = events.filter(e => e.event_type === 'form_submit').length;
+  const ctr      = clicks > 0 ? ((consults / clicks) * 100).toFixed(1) : 0;
+
+  document.getElementById('kpiGrid').innerHTML = `
+    <div class="kpi-card"><div class="kpi-label">카드 클릭</div><div class="kpi-value">${clicks}</div><div class="kpi-sub">fabric_click</div></div>
+    <div class="kpi-card"><div class="kpi-label">호버 (1s+)</div><div class="kpi-value">${hovers}</div><div class="kpi-sub">fabric_hover</div></div>
+    <div class="kpi-card"><div class="kpi-label">이미지 스와이프</div><div class="kpi-value">${swipes}</div><div class="kpi-sub">modal_image_swipe</div></div>
+    <div class="kpi-card"><div class="kpi-label">상담 담기</div><div class="kpi-value yellow">${consults}</div><div class="kpi-sub">consult_click</div></div>
+    <div class="kpi-card"><div class="kpi-label">폼 제출</div><div class="kpi-value green">${submits}</div><div class="kpi-sub">click→submit: ${ctr}%</div></div>
+  `;
+}
+
+// ── Click Rank ───────────────────────────────────────────────
+function renderClickRank(events) {
+  const clicks = events.filter(e => e.event_type === 'fabric_click');
+  renderRank('clickRank', clicks, 'accent');
+}
+function renderHoverRank(events) {
+  const hovers = events.filter(e => e.event_type === 'fabric_hover');
+  renderRank('hoverRank', hovers, 'green');
+}
+function renderRank(elId, events, colorClass) {
+  const count = {};
+  events.forEach(e => { count[e.fabric_name] = (count[e.fabric_name] || 0) + 1; });
+  const sorted = Object.entries(count).sort((a, b) => b[1] - a[1]).slice(0, 8);
+  const max    = sorted[0]?.[1] || 1;
+  const el     = document.getElementById(elId);
+  if (!sorted.length) { el.innerHTML = '<p style="color:var(--muted);font-size:12px;">데이터 없음</p>'; return; }
+  el.innerHTML = sorted.map(([name, cnt]) => `
+    <div class="bar-item">
+      <span class="bar-label">${name || '(미확인)'}</span>
+      <div class="bar-track"><div class="bar-fill ${colorClass}" style="width:${(cnt/max*100).toFixed(1)}%"></div></div>
+      <span class="bar-count">${cnt}</span>
+    </div>
+  `).join('');
+}
+
+// ── Funnel ───────────────────────────────────────────────────
+function renderFunnel(events) {
+  const steps = [
+    { key: 'fabric_hover',      label: '호버 (관심)' },
+    { key: 'fabric_click',      label: '카드 클릭 (모달 오픈)' },
+    { key: 'modal_image_swipe', label: '이미지 스와이프' },
+    { key: 'consult_click',     label: '스와치 담기' },
+    { key: 'form_submit',       label: '폼 제출 완료' },
+  ];
+  const counts = steps.map(s => ({ ...s, cnt: events.filter(e => e.event_type === s.key).length }));
+  const max    = counts[0]?.cnt || 1;
+  document.getElementById('funnelPanel').innerHTML = counts.map((s, i) => {
+    const rate = i === 0 ? '100%' : counts[i-1].cnt > 0 ? ((s.cnt / counts[i-1].cnt) * 100).toFixed(0) + '%' : '—';
+    return `
+    <div class="funnel-step">
+      <div class="funnel-num">${s.cnt}</div>
+      <div class="funnel-info">
+        <div class="funnel-name">${s.label}</div>
+        <div class="funnel-bar-wrap"><div class="funnel-bar" style="width:${max ? (s.cnt/max*100).toFixed(1) : 0}%"></div></div>
+      </div>
+      <div class="funnel-rate">${rate}</div>
+    </div>`;
+  }).join('');
+}
+
+// ── Device ───────────────────────────────────────────────────
+function renderDevice(events) {
+  const mo = events.filter(e => e.device_type === 'MO').length;
+  const pc = events.filter(e => e.device_type === 'PC').length;
+  const total = mo + pc || 1;
+  document.getElementById('devicePanel').innerHTML = `
+    <div style="display:flex;flex-direction:column;gap:16px;">
+      <div class="bar-item">
+        <span class="bar-label">모바일</span>
+        <div class="bar-track"><div class="bar-fill" style="width:${(mo/total*100).toFixed(1)}%"></div></div>
+        <span class="bar-count">${mo}</span>
+      </div>
+      <div class="bar-item">
+        <span class="bar-label">PC</span>
+        <div class="bar-track"><div class="bar-fill green" style="width:${(pc/total*100).toFixed(1)}%"></div></div>
+        <span class="bar-count">${pc}</span>
+      </div>
+      <div style="margin-top:8px;font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);">
+        MO ${(mo/total*100).toFixed(0)}% · PC ${(pc/total*100).toFixed(0)}%
+      </div>
+    </div>
+  `;
+}
+
+// ── Event Log ────────────────────────────────────────────────
+function renderLog(events) {
+  const recent = events.slice(0, 100);
+  if (!recent.length) {
+    document.getElementById('logBody').innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:32px;font-size:12px;">이벤트 없음</td></tr>';
+    return;
+  }
+  document.getElementById('logBody').innerHTML = recent.map(e => {
+    const time = e.timestamp ? new Date(e.timestamp).toLocaleString('ko-KR', { month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit' }) : '—';
+    return `
+    <tr>
+      <td style="font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);white-space:nowrap;">${time}</td>
+      <td><span class="tag ${e.event_type}">${e.event_type || '—'}</span></td>
+      <td style="font-size:12px;">${e.fabric_name || '—'}</td>
+      <td><span class="device-badge">${e.device_type || '—'}</span></td>
+      <td style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);">${e.session_id?.slice(0,8) || '—'}</td>
+      <td style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${e.extra || '—'}</td>
+    </tr>`;
+  }).join('');
+}
+
+// ── Init ─────────────────────────────────────────────────────
+loadData();
+</script>
+</body>
+</html>
