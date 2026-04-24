@@ -5,98 +5,142 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AM Curation · Analytics</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Bebas+Neue&family=Noto+Sans+KR:wght@300;400;500&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Pretendard:wght@300;400;500;600;700&display=swap');
+  @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
 
   :root {
-    --bg:     #0e0e0c;
-    --bg2:    #161614;
-    --bg3:    #1e1e1b;
-    --border: #2a2a26;
-    --text:   #e8e4dc;
-    --muted:  #6a6860;
-    --accent: #c8b896;
-    --green:  #7ab87a;
-    --red:    #c87a7a;
-    --yellow: #c8b87a;
-    --blue:   #7aa8c8;
+    --bg:      #f4f4f2;
+    --white:   #ffffff;
+    --border:  #e8e6e0;
+    --text:    #1a1a18;
+    --sub:     #6b6960;
+    --c1:      #2d2d2a;   /* 순방문자 - 다크 */
+    --c2:      #d4a847;   /* 이미지 넘김 - 골드 */
+    --c3:      #4a7fc1;   /* 뎁스 - 블루 */
+    --c4:      #c8813a;   /* 체류시간 - 오렌지 */
+    --c5:      #4a9e6b;   /* 전환율 - 그린 */
+    --mo:      #8b5cf6;   /* 모바일 - 퍼플 */
+    --pc:      #3b82f6;   /* PC - 블루 */
+    --red:     #e05252;
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { background: var(--bg); color: var(--text); font-family: 'Noto Sans KR', sans-serif; font-weight: 300; min-height: 100vh; }
+  body { background: var(--bg); color: var(--text); font-family: 'Pretendard', 'Noto Sans KR', sans-serif; font-weight: 400; min-height: 100vh; }
 
+  /* ── Header ── */
   header {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 20px 32px; border-bottom: 1px solid var(--border);
-    position: sticky; top: 0; background: var(--bg); z-index: 100;
+    background: var(--white); border-bottom: 1px solid var(--border);
+    padding: 16px 32px; display: flex; align-items: center; justify-content: space-between;
+    position: sticky; top: 0; z-index: 100;
   }
-  .logo { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 3px; color: var(--accent); }
-  .logo-sub { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted); letter-spacing: 1px; margin-left: 12px; }
-  .refresh-btn {
-    font-family: 'DM Mono', monospace; font-size: 11px;
-    background: transparent; border: 1px solid var(--border);
-    color: var(--muted); padding: 6px 14px; cursor: pointer;
-    letter-spacing: 1px; text-transform: uppercase; transition: all .2s;
+  .logo { font-weight: 700; font-size: 16px; letter-spacing: 2px; color: var(--text); }
+  .logo span { font-weight: 300; font-size: 12px; color: var(--sub); margin-left: 10px; letter-spacing: 0; }
+  .header-right { display: flex; align-items: center; gap: 12px; }
+  .updated { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--sub); }
+  .btn {
+    font-size: 12px; font-weight: 500; background: var(--text); color: #fff;
+    border: none; padding: 7px 16px; border-radius: 6px; cursor: pointer; transition: opacity .2s;
   }
-  .refresh-btn:hover { border-color: var(--accent); color: var(--accent); }
-  .last-updated { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted); margin-right: 12px; }
+  .btn:hover { opacity: .8; }
 
-  main { padding: 32px; max-width: 1280px; margin: 0 auto; }
+  /* ── Main ── */
+  main { padding: 24px 32px; max-width: 1320px; margin: 0 auto; }
 
-  .filter-row { display: flex; gap: 8px; margin-bottom: 32px; }
+  /* ── Top bar ── */
+  .top-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+  .filter-row { display: flex; gap: 6px; }
   .filter-btn {
-    font-family: 'DM Mono', monospace; font-size: 11px;
-    background: transparent; border: 1px solid var(--border);
-    color: var(--muted); padding: 7px 16px; cursor: pointer;
-    letter-spacing: 1px; text-transform: uppercase; transition: all .2s;
+    font-size: 12px; font-weight: 500; background: var(--white); border: 1px solid var(--border);
+    color: var(--sub); padding: 6px 14px; border-radius: 20px; cursor: pointer; transition: all .15s;
   }
-  .filter-btn.active, .filter-btn:hover { border-color: var(--accent); color: var(--accent); background: rgba(200,184,150,.06); }
+  .filter-btn.active { background: var(--text); color: #fff; border-color: var(--text); }
+  .filter-btn:hover:not(.active) { border-color: var(--text); color: var(--text); }
 
-  .section-title {
-    font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted);
-    letter-spacing: 2px; text-transform: uppercase; margin-bottom: 16px;
-    display: flex; align-items: center; gap: 12px;
+  .device-toggle { display: flex; background: var(--white); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+  .device-btn { font-size: 12px; font-weight: 500; background: transparent; border: none; color: var(--sub); padding: 6px 16px; cursor: pointer; transition: all .15s; border-right: 1px solid var(--border); }
+  .device-btn:last-child { border-right: none; }
+  .device-btn.active { background: var(--text); color: #fff; }
+
+  /* ── Section label ── */
+  .sec-label { font-size: 11px; font-weight: 600; color: var(--sub); letter-spacing: 1.5px; text-transform: uppercase; margin: 24px 0 12px; }
+
+  /* ── KPI cards ── */
+  .kpi-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 20px; }
+  .kpi {
+    background: var(--white); border-radius: 12px; padding: 20px;
+    border: 1px solid var(--border); position: relative; overflow: hidden;
   }
-  .section-title::after { content:''; flex:1; height:1px; background:var(--border); }
+  .kpi-accent { position: absolute; top: 0; left: 0; right: 0; height: 3px; border-radius: 12px 12px 0 0; }
+  .kpi-label { font-size: 11px; font-weight: 500; color: var(--sub); margin-bottom: 4px; }
+  .kpi-num { font-family: 'DM Mono', monospace; font-size: 38px; font-weight: 500; line-height: 1.1; margin: 6px 0 4px; }
+  .kpi-sub { font-size: 11px; color: var(--sub); }
+  .kpi-device { display: flex; gap: 10px; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border); }
+  .kpi-device span { font-family: 'DM Mono', monospace; font-size: 11px; font-weight: 500; }
 
-  .kpi-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1px; background: var(--border); margin-bottom: 32px; }
-  .kpi-card { background: var(--bg2); padding: 24px 20px; }
-  .kpi-label { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted); letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 12px; }
-  .kpi-value { font-family: 'Bebas Neue', sans-serif; font-size: 44px; line-height: 1; }
-  .kpi-sub { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted); margin-top: 6px; }
+  /* ── Panels ── */
+  .two-col   { display: grid; grid-template-columns: 1fr 1fr;     gap: 12px; margin-bottom: 12px; }
+  .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+  .panel { background: var(--white); border-radius: 12px; border: 1px solid var(--border); padding: 20px; }
+  .panel-title { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+  .panel-sub   { font-size: 11px; color: var(--sub); margin-bottom: 16px; }
 
-  .two-col   { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--border); margin-bottom: 1px; }
-  .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1px; background: var(--border); margin-bottom: 32px; }
-  .panel { background: var(--bg2); padding: 24px; }
+  /* ── Table ── */
+  table { width: 100%; border-collapse: collapse; }
+  th { font-size: 10px; font-weight: 600; color: var(--sub); letter-spacing: .5px; text-transform: uppercase; padding: 0 8px 10px; text-align: left; border-bottom: 1px solid var(--border); }
+  td { padding: 10px 8px; border-bottom: 1px solid var(--border); font-size: 13px; vertical-align: middle; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: #fafaf8; }
+  td.num  { font-family: 'DM Mono', monospace; font-size: 14px; font-weight: 500; text-align: right; }
+  td.sub  { font-size: 11px; color: var(--sub); }
+  td.right { text-align: right; }
 
-  .data-table { width: 100%; border-collapse: collapse; font-size: 12px; }
-  .data-table th {
-    font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted);
-    letter-spacing: 1px; text-transform: uppercase; padding: 10px 12px;
-    text-align: left; border-bottom: 1px solid var(--border); font-weight: 400;
-  }
-  .data-table td { padding: 10px 12px; border-bottom: 1px solid var(--border); vertical-align: middle; }
-  .data-table tr:last-child td { border-bottom: none; }
-  .data-table tr:hover td { background: rgba(255,255,255,.02); }
+  /* ── Rank num ── */
+  .rank { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--sub); width: 18px; display: inline-block; }
+  .rank.top { color: var(--c2); font-weight: 600; }
 
-  .bar-track { flex: 1; height: 4px; background: var(--bg3); border-radius: 2px; }
-  .bar-fill  { height: 100%; border-radius: 2px; transition: width .6s cubic-bezier(.16,1,.3,1); }
+  /* ── Bar ── */
+  .bar-bg { height: 4px; background: var(--bg); border-radius: 2px; margin-top: 4px; }
+  .bar-fg { height: 100%; border-radius: 2px; transition: width .5s cubic-bezier(.16,1,.3,1); }
 
-  .rate-pill { font-family: 'DM Mono', monospace; font-size: 10px; padding: 3px 8px; border-radius: 2px; display: inline-block; }
-  .rate-pill.high   { background: rgba(122,184,122,.15); color: var(--green); }
-  .rate-pill.mid    { background: rgba(200,184,122,.15); color: var(--yellow); }
-  .rate-pill.low    { background: rgba(200,122,122,.15); color: var(--red); }
+  /* ── Pill ── */
+  .pill { font-size: 11px; font-weight: 600; padding: 3px 8px; border-radius: 20px; display: inline-block; }
+  .pill.high { background: #e8f7ee; color: #2a8c52; }
+  .pill.mid  { background: #fef9e7; color: #c4922a; }
+  .pill.low  { background: #fdecea; color: var(--red); }
 
-  .loading { display: flex; align-items: center; justify-content: center; padding: 48px; color: var(--muted); font-family: 'DM Mono', monospace; font-size: 12px; }
-  .spinner { width: 14px; height: 14px; border: 1px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin .8s linear infinite; margin-right: 10px; }
-  @keyframes spin { to { transform: rotate(360deg); } }
+  /* ── Bar chart (vertical) ── */
+  .bar-chart { display: flex; align-items: flex-end; gap: 6px; height: 80px; margin-top: 12px; }
+  .bar-chart-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+  .bar-chart-bar { width: 100%; border-radius: 3px 3px 0 0; min-height: 2px; transition: height .4s; }
+  .bar-chart-label { font-size: 9px; color: var(--sub); white-space: nowrap; }
 
-  .scroll-wrap { max-height: 360px; overflow-y: auto; }
-  .scroll-wrap::-webkit-scrollbar { width: 3px; }
-  .scroll-wrap::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+  /* ── Funnel ── */
+  .funnel { display: flex; flex-direction: column; gap: 16px; }
+  .f-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+  .f-label { font-size: 13px; font-weight: 500; }
+  .f-right { display: flex; align-items: center; gap: 8px; }
+  .f-cnt { font-family: 'DM Mono', monospace; font-size: 16px; font-weight: 600; }
 
-  @media (max-width: 900px) {
+  /* ── Device split bar ── */
+  .split-bar { height: 8px; border-radius: 4px; overflow: hidden; display: flex; background: var(--bg); margin: 6px 0 4px; }
+  .split-mo { background: var(--mo); }
+  .split-pc { background: var(--pc); }
+  .split-labels { display: flex; justify-content: space-between; }
+  .split-labels span { font-size: 10px; font-weight: 500; font-family: 'DM Mono', monospace; }
+
+  /* ── Scroll ── */
+  .scroll { max-height: 300px; overflow-y: auto; }
+  .scroll::-webkit-scrollbar { width: 3px; }
+  .scroll::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  /* ── Loading ── */
+  .loading { display: flex; align-items: center; justify-content: center; padding: 36px; color: var(--sub); font-size: 12px; gap: 8px; }
+  .spin { width: 14px; height: 14px; border: 2px solid var(--border); border-top-color: var(--text); border-radius: 50%; animation: sp .7s linear infinite; }
+  @keyframes sp { to { transform: rotate(360deg); } }
+
+  @media (max-width: 1000px) {
     main { padding: 16px; }
-    .kpi-grid, .three-col { grid-template-columns: repeat(2, 1fr); }
+    .kpi-row, .three-col { grid-template-columns: repeat(2, 1fr); }
     .two-col { grid-template-columns: 1fr; }
   }
 </style>
@@ -105,85 +149,124 @@
 
 <header>
   <div>
-    <span class="logo">WITH AM</span>
-    <span class="logo-sub">Curation Analytics</span>
+    <span class="logo">WITH AM <span>Curation Analytics</span></span>
   </div>
-  <div style="display:flex;align-items:center;">
-    <span class="last-updated" id="lastUpdated">—</span>
-    <button class="refresh-btn" onclick="loadData()">↻ 새로고침</button>
+  <div class="header-right">
+    <span class="updated" id="updated">—</span>
+    <button class="btn" onclick="loadData()">↻ 새로고침</button>
   </div>
 </header>
 
 <main>
-  <div class="filter-row">
-    <button class="filter-btn active" onclick="setFilter(this,1)">오늘</button>
-    <button class="filter-btn" onclick="setFilter(this,7)">7일</button>
-    <button class="filter-btn" onclick="setFilter(this,30)">30일</button>
-    <button class="filter-btn" onclick="setFilter(this,0)">전체</button>
+  <div class="top-bar">
+    <div class="filter-row">
+      <button class="filter-btn active" onclick="setFilter(this,1)">오늘</button>
+      <button class="filter-btn" onclick="setFilter(this,7)">7일</button>
+      <button class="filter-btn" onclick="setFilter(this,30)">30일</button>
+      <button class="filter-btn" onclick="setFilter(this,0)">전체</button>
+    </div>
+    <div class="device-toggle">
+      <button class="device-btn active" onclick="setDevice(this,'ALL')">전체</button>
+      <button class="device-btn" onclick="setDevice(this,'PC')">PC</button>
+      <button class="device-btn" onclick="setDevice(this,'MO')">MO</button>
+    </div>
   </div>
 
-  <p class="section-title">핵심 지표</p>
-  <div class="kpi-grid" id="kpiGrid">
-    <div class="loading"><div class="spinner"></div>로딩 중</div>
+  <!-- KPI -->
+  <p class="sec-label">핵심 지표</p>
+  <div class="kpi-row" id="kpiRow">
+    <div class="loading"><div class="spin"></div>로딩 중</div>
   </div>
 
-  <p class="section-title">원단별 상세</p>
-  <div class="two-col" style="margin-bottom:32px;">
+  <!-- 원단별 -->
+  <p class="sec-label">원단별 분석</p>
+  <div class="two-col">
     <div class="panel">
-      <p class="section-title" style="margin-bottom:16px;">① 순방문자 수 <span style="color:var(--muted);font-size:9px;margin-left:6px;">세션 중복 제거</span></p>
-      <div class="scroll-wrap">
-        <table class="data-table">
-          <thead><tr><th>원단</th><th style="text-align:right;">방문자</th><th style="width:40%;">비율</th></tr></thead>
-          <tbody id="uniqueBody"><tr><td colspan="3"><div class="loading"><div class="spinner"></div></div></td></tr></tbody>
+      <p class="panel-title">① 순방문자 수</p>
+      <p class="panel-sub">세션 기준 중복 제거</p>
+      <div class="scroll">
+        <table>
+          <thead><tr><th>#</th><th>원단</th><th style="text-align:right;">방문자</th><th style="width:35%;">분포</th></tr></thead>
+          <tbody id="uniqueBody"><tr><td colspan="4"><div class="loading"><div class="spin"></div></div></td></tr></tbody>
         </table>
       </div>
     </div>
     <div class="panel">
-      <p class="section-title" style="margin-bottom:16px;">② 이미지 넘김 비율 <span style="color:var(--muted);font-size:9px;margin-left:6px;">클릭 대비 스와이프</span></p>
-      <div class="scroll-wrap">
-        <table class="data-table">
+      <p class="panel-title">② 이미지 넘김 비율</p>
+      <p class="panel-sub">클릭 대비 스와이프 비율</p>
+      <div class="scroll">
+        <table>
           <thead><tr><th>원단</th><th style="text-align:right;">클릭</th><th style="text-align:right;">스와이프</th><th style="text-align:right;">비율</th></tr></thead>
-          <tbody id="swipeBody"><tr><td colspan="4"><div class="loading"><div class="spinner"></div></div></td></tr></tbody>
+          <tbody id="swipeBody"><tr><td colspan="4"><div class="loading"><div class="spin"></div></div></td></tr></tbody>
         </table>
       </div>
     </div>
   </div>
 
-  <p class="section-title">행동 분석</p>
+  <!-- 행동 분석 -->
+  <p class="sec-label">행동 분석</p>
   <div class="three-col">
     <div class="panel">
-      <p class="section-title" style="margin-bottom:16px;">③ 평균 이미지 뎁스 <span style="color:var(--muted);font-size:9px;margin-left:4px;">몇 번째까지</span></p>
-      <div id="depthPanel"><div class="loading"><div class="spinner"></div></div></div>
+      <p class="panel-title">③ 평균 이미지 뎁스</p>
+      <p class="panel-sub">이미지를 평균 몇 번째까지 넘기는지</p>
+      <div id="depthPanel"><div class="loading"><div class="spin"></div></div></div>
     </div>
     <div class="panel">
-      <p class="section-title" style="margin-bottom:16px;">④ 모달 체류시간 <span style="color:var(--muted);font-size:9px;margin-left:4px;">평균 초</span></p>
-      <div id="durationPanel"><div class="loading"><div class="spinner"></div></div></div>
+      <p class="panel-title">④ 모달 체류시간</p>
+      <p class="panel-sub">원단별 평균 열람 시간 (초)</p>
+      <div id="durationPanel"><div class="loading"><div class="spin"></div></div></div>
     </div>
     <div class="panel">
-      <p class="section-title" style="margin-bottom:16px;">⑤ 클릭 → 상담 전환율</p>
-      <div id="conversionPanel"><div class="loading"><div class="spinner"></div></div></div>
+      <p class="panel-title">⑤ 전환 퍼널</p>
+      <p class="panel-sub">클릭 → 스와치 담기 → 폼 제출</p>
+      <div id="funnelPanel"><div class="loading"><div class="spin"></div></div></div>
+    </div>
+  </div>
+
+  <!-- PC / MO -->
+  <p class="sec-label">PC / MO 비교</p>
+  <div class="two-col" style="margin-bottom:0;">
+    <div class="panel">
+      <p class="panel-title">이벤트별 디바이스 비율</p>
+      <p class="panel-sub">각 행동의 MO vs PC 분포</p>
+      <div id="devicePanel"><div class="loading"><div class="spin"></div></div></div>
+    </div>
+    <div class="panel">
+      <p class="panel-title">원단별 클릭 — MO / PC</p>
+      <p class="panel-sub">디바이스별 관심 원단 비교</p>
+      <div id="deviceFabricPanel"><div class="loading"><div class="spin"></div></div></div>
     </div>
   </div>
 </main>
 
 <script>
-const NOTION_TOKEN = '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';
 const NOTION_DB_ID = '34b563728910804f9033d157a9cfdcef';
-let FILTER_DAYS = 1;
-let allEvents   = [];
+const API_URL      = 'https://curation-woven.vercel.app/api/notion-query';
+
+let FILTER_DAYS = 1, DEVICE = 'ALL', allEvents = [];
 
 function setFilter(btn, days) {
   document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  FILTER_DAYS = days;
-  renderAll();
+  btn.classList.add('active'); FILTER_DAYS = days; renderAll();
+}
+function setDevice(btn, d) {
+  document.querySelectorAll('.device-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active'); DEVICE = d; renderAll();
 }
 
-function filterByDate(events) {
-  if (FILTER_DAYS === 0) return events;
-  const cutoff = new Date();
-  cutoff.setDate(cutoff.getDate() - FILTER_DAYS);
-  return events.filter(e => new Date(e.timestamp) >= cutoff);
+function filterEvents(events) {
+  let ev = events;
+  if (FILTER_DAYS > 0) {
+    const cut = new Date(); cut.setDate(cut.getDate() - FILTER_DAYS);
+    ev = ev.filter(e => new Date(e.timestamp) >= cut);
+  }
+  if (DEVICE !== 'ALL') ev = ev.filter(e => e.device_type === DEVICE);
+  return ev;
+}
+function filterDate(e) {
+  if (FILTER_DAYS === 0) return true;
+  const cut = new Date(); cut.setDate(cut.getDate() - FILTER_DAYS);
+  return new Date(e.timestamp) >= cut;
 }
 
 async function fetchAllPages() {
@@ -191,11 +274,7 @@ async function fetchAllPages() {
   do {
     const body = { page_size: 100, sorts: [{ property: 'timestamp', direction: 'descending' }] };
     if (cursor) body.start_cursor = cursor;
-const res = await fetch(`https://curation-woven.vercel.app/api/notion-query`, {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify(body),
-});
+    const res  = await fetch(API_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
     const data = await res.json();
     results = results.concat(data.results || []);
     cursor  = data.has_more ? data.next_cursor : undefined;
@@ -213,169 +292,219 @@ function parseEvents(pages) {
       fabric_name: props.fabric_name?.title?.[0]?.plain_text || '',
       timestamp:   props.timestamp?.date?.start || '',
       session_id:  props.session_id?.rich_text?.[0]?.plain_text || '',
+      device_type: props.device_type?.select?.name || '',
       extra,
     };
   });
 }
 
 async function loadData() {
-  document.getElementById('lastUpdated').textContent = '로딩 중…';
+  document.getElementById('updated').textContent = '로딩 중…';
   try {
     allEvents = parseEvents(await fetchAllPages());
     renderAll();
-    document.getElementById('lastUpdated').textContent =
-      '업데이트 ' + new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
-  } catch(e) {
-    document.getElementById('lastUpdated').textContent = '오류: ' + e.message;
-  }
+    document.getElementById('updated').textContent =
+      new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' }) + ' 업데이트';
+  } catch(e) { document.getElementById('updated').textContent = '오류: ' + e.message; }
 }
 
 function renderAll() {
-  const ev = filterByDate(allEvents);
-  renderKPI(ev);
-  renderUniqueVisitors(ev);
-  renderSwipeRate(ev);
-  renderDepth(ev);
-  renderDuration(ev);
-  renderConversion(ev);
+  const ev = filterEvents(allEvents);
+  renderKPI(ev); renderUnique(ev); renderSwipe(ev);
+  renderDepth(ev); renderDuration(ev); renderFunnel(ev);
+  renderDevice(); renderDeviceFabric();
 }
 
 function renderKPI(ev) {
-  const uniqueSessions  = new Set(ev.filter(e => e.event_type === 'fabric_click').map(e => e.session_id)).size;
-  const clicks          = ev.filter(e => e.event_type === 'fabric_click').length;
-  const swipes          = ev.filter(e => e.event_type === 'modal_image_swipe').length;
-  const swipeRate       = clicks > 0 ? ((swipes / clicks) * 100).toFixed(0) : 0;
-  const swipeEvents     = ev.filter(e => e.event_type === 'modal_image_swipe' && e.extra?.slide_index);
-  const avgDepth        = swipeEvents.length > 0
-    ? (swipeEvents.reduce((s,e) => s + (e.extra.slide_index||0), 0) / swipeEvents.length).toFixed(1) : 0;
-  const closeEvents     = ev.filter(e => e.event_type === 'modal_close' && e.extra?.duration_sec >= 0);
-  const avgDuration     = closeEvents.length > 0
-    ? (closeEvents.reduce((s,e) => s + (e.extra.duration_sec||0), 0) / closeEvents.length).toFixed(1) : 0;
-  const consultSessions = new Set(ev.filter(e => e.event_type === 'consult_click').map(e => e.session_id)).size;
-  const convRate        = uniqueSessions > 0 ? ((consultSessions / uniqueSessions) * 100).toFixed(1) : 0;
+  const uSess   = new Set(ev.filter(e=>e.event_type==='fabric_click').map(e=>e.session_id)).size;
+  const clicks  = ev.filter(e=>e.event_type==='fabric_click').length;
+  const swipes  = ev.filter(e=>e.event_type==='modal_image_swipe').length;
+  const sRate   = clicks>0?((swipes/clicks)*100).toFixed(0):0;
+  const sEvs    = ev.filter(e=>e.event_type==='modal_image_swipe'&&e.extra?.slide_index);
+  const avgD    = sEvs.length>0?(sEvs.reduce((s,e)=>s+(e.extra.slide_index||0),0)/sEvs.length).toFixed(1):0;
+  const cEvs    = ev.filter(e=>e.event_type==='modal_close'&&e.extra?.duration_sec>=0);
+  const avgDur  = cEvs.length>0?(cEvs.reduce((s,e)=>s+(e.extra.duration_sec||0),0)/cEvs.length).toFixed(1):0;
+  const qSess   = new Set(ev.filter(e=>e.event_type==='consult_click').map(e=>e.session_id)).size;
+  const conv    = uSess>0?((qSess/uSess)*100).toFixed(1):0;
 
-  document.getElementById('kpiGrid').innerHTML = `
-    <div class="kpi-card"><div class="kpi-label">① 순방문자</div><div class="kpi-value" style="color:var(--text)">${uniqueSessions}</div><div class="kpi-sub">세션 중복 제거</div></div>
-    <div class="kpi-card"><div class="kpi-label">② 이미지 넘김률</div><div class="kpi-value" style="color:var(--yellow)">${swipeRate}%</div><div class="kpi-sub">클릭 대비 스와이프</div></div>
-    <div class="kpi-card"><div class="kpi-label">③ 평균 이미지 뎁스</div><div class="kpi-value" style="color:var(--blue)">${avgDepth}</div><div class="kpi-sub">평균 몇 번째까지</div></div>
-    <div class="kpi-card"><div class="kpi-label">④ 평균 체류시간</div><div class="kpi-value" style="color:var(--accent)">${avgDuration}초</div><div class="kpi-sub">모달 열고 닫기 기준</div></div>
-    <div class="kpi-card"><div class="kpi-label">⑤ 상담 전환율</div><div class="kpi-value" style="color:var(--green)">${convRate}%</div><div class="kpi-sub">방문 → 스와치 담기</div></div>
-  `;
+  const base    = allEvents.filter(filterDate);
+  const moSess  = new Set(base.filter(e=>e.event_type==='fabric_click'&&e.device_type==='MO').map(e=>e.session_id)).size;
+  const pcSess  = new Set(base.filter(e=>e.event_type==='fabric_click'&&e.device_type==='PC').map(e=>e.session_id)).size;
+
+  const kpis = [
+    { label:'순방문자', num: uSess,       unit:'',  color:'var(--c1)', sub:'세션 중복 제거', extra:`<div class="kpi-device"><span style="color:var(--mo)">MO ${moSess}</span><span style="color:var(--pc)">PC ${pcSess}</span></div>` },
+    { label:'이미지 넘김률', num:`${sRate}%`, unit:'', color:'var(--c2)', sub:'클릭 대비 스와이프' },
+    { label:'평균 이미지 뎁스', num: avgD,  unit:'번째', color:'var(--c3)', sub:'몇 번째까지 넘기는지' },
+    { label:'평균 체류시간', num:`${avgDur}`, unit:'초', color:'var(--c4)', sub:'모달 열고 닫기 기준' },
+    { label:'상담 전환율', num:`${conv}%`, unit:'', color:'var(--c5)', sub:'방문 → 스와치 담기' },
+  ];
+
+  document.getElementById('kpiRow').innerHTML = kpis.map(k => `
+    <div class="kpi">
+      <div class="kpi-accent" style="background:${k.color}"></div>
+      <div class="kpi-label">${k.label}</div>
+      <div class="kpi-num" style="color:${k.color}">${k.num}<span style="font-size:16px;font-weight:400;color:var(--sub);margin-left:2px;">${k.unit}</span></div>
+      <div class="kpi-sub">${k.sub}</div>
+      ${k.extra||''}
+    </div>`).join('');
 }
 
-function renderUniqueVisitors(ev) {
+function renderUnique(ev) {
   const map = {};
-  ev.filter(e => e.event_type === 'fabric_click').forEach(e => {
-    if (!map[e.fabric_name]) map[e.fabric_name] = new Set();
-    map[e.fabric_name].add(e.session_id);
-  });
-  const sorted = Object.entries(map).map(([n,s]) => [n, s.size]).sort((a,b) => b[1]-a[1]);
-  const max = sorted[0]?.[1] || 1;
+  ev.filter(e=>e.event_type==='fabric_click').forEach(e=>{ if(!map[e.fabric_name]) map[e.fabric_name]=new Set(); map[e.fabric_name].add(e.session_id); });
+  const sorted = Object.entries(map).map(([n,s])=>[n,s.size]).sort((a,b)=>b[1]-a[1]);
+  const max = sorted[0]?.[1]||1;
   document.getElementById('uniqueBody').innerHTML = sorted.length
-    ? sorted.map(([name, cnt]) => `
+    ? sorted.map(([name,cnt],i)=>`
       <tr>
-        <td style="font-size:12px;">${name}</td>
-        <td style="font-family:'DM Mono',monospace;font-size:13px;color:var(--accent);text-align:right;">${cnt}</td>
-        <td><div style="display:flex;align-items:center;gap:8px;">
-          <div class="bar-track" style="flex:1;"><div class="bar-fill" style="background:var(--accent);width:${(cnt/max*100).toFixed(1)}%"></div></div>
-        </div></td>
+        <td><span class="rank ${i<3?'top':''}">${i+1}</span></td>
+        <td style="font-weight:${i===0?'600':'400'}">${name}</td>
+        <td class="num" style="color:var(--c1)">${cnt}</td>
+        <td><div class="bar-bg"><div class="bar-fg" style="background:var(--c1);width:${(cnt/max*100).toFixed(1)}%"></div></div></td>
       </tr>`).join('')
-    : '<tr><td colspan="3" style="text-align:center;padding:20px;color:var(--muted);font-size:12px;">데이터 없음</td></tr>';
+    : '<tr><td colspan="4" style="text-align:center;padding:20px;color:var(--sub);">데이터 없음</td></tr>';
 }
 
-function renderSwipeRate(ev) {
-  const clickMap = {}, swipeMap = {};
-  ev.filter(e => e.event_type === 'fabric_click').forEach(e => { clickMap[e.fabric_name] = (clickMap[e.fabric_name]||0)+1; });
-  ev.filter(e => e.event_type === 'modal_image_swipe').forEach(e => { swipeMap[e.fabric_name] = (swipeMap[e.fabric_name]||0)+1; });
-  const sorted = Object.keys(clickMap)
-    .map(n => ({ name:n, click:clickMap[n], swipe:swipeMap[n]||0 }))
-    .map(x => ({ ...x, rate: x.click > 0 ? x.swipe/x.click*100 : 0 }))
-    .sort((a,b) => b.rate - a.rate);
+function renderSwipe(ev) {
+  const cm={}, sm={};
+  ev.filter(e=>e.event_type==='fabric_click').forEach(e=>{ cm[e.fabric_name]=(cm[e.fabric_name]||0)+1; });
+  ev.filter(e=>e.event_type==='modal_image_swipe').forEach(e=>{ sm[e.fabric_name]=(sm[e.fabric_name]||0)+1; });
+  const sorted = Object.keys(cm).map(n=>({ name:n, click:cm[n], swipe:sm[n]||0, rate:cm[n]>0?(sm[n]||0)/cm[n]*100:0 })).sort((a,b)=>b.rate-a.rate);
   document.getElementById('swipeBody').innerHTML = sorted.length
-    ? sorted.map(x => {
-        const rc = x.rate >= 50 ? 'high' : x.rate >= 20 ? 'mid' : 'low';
+    ? sorted.map(x=>{
+        const rc=x.rate>=50?'high':x.rate>=20?'mid':'low';
         return `<tr>
-          <td style="font-size:12px;">${x.name}</td>
-          <td style="font-family:'DM Mono',monospace;font-size:12px;color:var(--muted);text-align:right;">${x.click}</td>
-          <td style="font-family:'DM Mono',monospace;font-size:12px;color:var(--muted);text-align:right;">${x.swipe}</td>
-          <td style="text-align:right;"><span class="rate-pill ${rc}">${x.rate.toFixed(0)}%</span></td>
+          <td>${x.name}</td>
+          <td class="num sub">${x.click}</td>
+          <td class="num sub">${x.swipe}</td>
+          <td class="right"><span class="pill ${rc}">${x.rate.toFixed(0)}%</span></td>
         </tr>`;
       }).join('')
-    : '<tr><td colspan="4" style="text-align:center;padding:20px;color:var(--muted);font-size:12px;">데이터 없음</td></tr>';
+    : '<tr><td colspan="4" style="text-align:center;padding:20px;color:var(--sub);">데이터 없음</td></tr>';
 }
 
 function renderDepth(ev) {
-  const swipes = ev.filter(e => e.event_type === 'modal_image_swipe' && e.extra?.slide_index);
-  const sessionMax = {};
-  swipes.forEach(e => {
-    const key = `${e.session_id}__${e.fabric_name}`;
-    sessionMax[key] = Math.max(sessionMax[key]||0, e.extra.slide_index);
-  });
-  const fabricSum = {}, fabricCnt = {};
-  Object.entries(sessionMax).forEach(([key, val]) => {
-    const name = key.split('__')[1];
-    fabricSum[name] = (fabricSum[name]||0) + val;
-    fabricCnt[name] = (fabricCnt[name]||0) + 1;
-  });
-  const sorted = Object.keys(fabricSum).map(n => ({ name:n, avg: fabricSum[n]/fabricCnt[n] })).sort((a,b) => b.avg-a.avg);
-  const maxAvg = sorted[0]?.avg || 1;
+  const swipes = ev.filter(e=>e.event_type==='modal_image_swipe'&&e.extra?.slide_index);
+  const sMax={};
+  swipes.forEach(e=>{ const k=`${e.session_id}__${e.fabric_name}`; sMax[k]=Math.max(sMax[k]||0,e.extra.slide_index); });
+  const fS={}, fC={};
+  Object.entries(sMax).forEach(([k,v])=>{ const n=k.split('__')[1]; fS[n]=(fS[n]||0)+v; fC[n]=(fC[n]||0)+1; });
+  const sorted = Object.keys(fS).map(n=>({ name:n, avg:fS[n]/fC[n] })).sort((a,b)=>b.avg-a.avg);
+  const max = sorted[0]?.avg||1;
   document.getElementById('depthPanel').innerHTML = sorted.length
-    ? `<div style="display:flex;flex-direction:column;gap:12px;">${sorted.map(x => `
+    ? `<div style="display:flex;flex-direction:column;gap:12px;">${sorted.map(x=>`
         <div>
-          <div style="display:flex;justify-content:space-between;margin-bottom:5px;">
-            <span style="font-size:12px;">${x.name}</span>
-            <span style="font-family:'DM Mono',monospace;font-size:11px;color:var(--blue);">${x.avg.toFixed(1)}번째</span>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;">
+            <span style="font-size:13px;">${x.name}</span>
+            <span style="font-family:'DM Mono',monospace;font-size:15px;font-weight:600;color:var(--c3);">${x.avg.toFixed(1)}</span>
           </div>
-          <div class="bar-track"><div class="bar-fill" style="background:var(--blue);width:${(x.avg/maxAvg*100).toFixed(1)}%"></div></div>
+          <div class="bar-bg"><div class="bar-fg" style="background:var(--c3);width:${(x.avg/max*100).toFixed(1)}%"></div></div>
         </div>`).join('')}</div>`
-    : '<p style="color:var(--muted);font-size:12px;padding:20px 0;">데이터 없음</p>';
+    : '<p style="color:var(--sub);font-size:12px;padding:20px 0;">데이터 없음</p>';
 }
 
 function renderDuration(ev) {
-  const closes = ev.filter(e => e.event_type === 'modal_close' && e.extra?.duration_sec >= 0);
-  const sum = {}, cnt = {};
-  closes.forEach(e => {
-    sum[e.fabric_name] = (sum[e.fabric_name]||0) + e.extra.duration_sec;
-    cnt[e.fabric_name] = (cnt[e.fabric_name]||0) + 1;
-  });
-  const sorted = Object.keys(sum).map(n => ({ name:n, avg: sum[n]/cnt[n] })).sort((a,b) => b.avg-a.avg);
-  const maxAvg = sorted[0]?.avg || 1;
+  const closes = ev.filter(e=>e.event_type==='modal_close'&&e.extra?.duration_sec>=0);
+  const s={}, c={};
+  closes.forEach(e=>{ s[e.fabric_name]=(s[e.fabric_name]||0)+e.extra.duration_sec; c[e.fabric_name]=(c[e.fabric_name]||0)+1; });
+  const sorted = Object.keys(s).map(n=>({ name:n, avg:s[n]/c[n] })).sort((a,b)=>b.avg-a.avg);
+  const max = sorted[0]?.avg||1;
   document.getElementById('durationPanel').innerHTML = sorted.length
-    ? `<div style="display:flex;flex-direction:column;gap:12px;">${sorted.map(x => `
+    ? `<div style="display:flex;flex-direction:column;gap:12px;">${sorted.map(x=>`
         <div>
-          <div style="display:flex;justify-content:space-between;margin-bottom:5px;">
-            <span style="font-size:12px;">${x.name}</span>
-            <span style="font-family:'DM Mono',monospace;font-size:11px;color:var(--yellow);">${x.avg.toFixed(1)}s</span>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;">
+            <span style="font-size:13px;">${x.name}</span>
+            <span style="font-family:'DM Mono',monospace;font-size:15px;font-weight:600;color:var(--c4);">${x.avg.toFixed(1)}s</span>
           </div>
-          <div class="bar-track"><div class="bar-fill" style="background:var(--yellow);width:${(x.avg/maxAvg*100).toFixed(1)}%"></div></div>
+          <div class="bar-bg"><div class="bar-fg" style="background:var(--c4);width:${(x.avg/max*100).toFixed(1)}%"></div></div>
         </div>`).join('')}</div>`
-    : '<p style="color:var(--muted);font-size:12px;padding:20px 0;">데이터 없음</p>';
+    : '<p style="color:var(--sub);font-size:12px;padding:20px 0;">데이터 없음</p>';
 }
 
-function renderConversion(ev) {
-  const clickSessions   = new Set(ev.filter(e => e.event_type === 'fabric_click').map(e => e.session_id));
-  const consultSessions = new Set(ev.filter(e => e.event_type === 'consult_click').map(e => e.session_id));
-  const submitSessions  = new Set(ev.filter(e => e.event_type === 'form_submit').map(e => e.session_id));
-  const total    = clickSessions.size || 1;
-  const toCart   = [...consultSessions].filter(s => clickSessions.has(s)).length;
-  const toSubmit = submitSessions.size;
-  const steps = [
-    { label:'원단 클릭',    cnt: clickSessions.size, color:'var(--accent)' },
-    { label:'스와치 담기',  cnt: toCart,             color:'var(--yellow)' },
-    { label:'폼 제출 완료', cnt: toSubmit,           color:'var(--green)'  },
+function renderFunnel(ev) {
+  const cS = new Set(ev.filter(e=>e.event_type==='fabric_click').map(e=>e.session_id));
+  const qS = new Set(ev.filter(e=>e.event_type==='consult_click').map(e=>e.session_id));
+  const fS = new Set(ev.filter(e=>e.event_type==='form_submit').map(e=>e.session_id));
+  const total  = cS.size||1;
+  const toCart = [...qS].filter(s=>cS.has(s)).length;
+  const steps  = [
+    { label:'원단 클릭',    cnt:cS.size, color:'var(--c1)' },
+    { label:'스와치 담기',  cnt:toCart,  color:'var(--c2)' },
+    { label:'폼 제출 완료', cnt:fS.size, color:'var(--c5)' },
   ];
-  document.getElementById('conversionPanel').innerHTML = `
-    <div style="display:flex;flex-direction:column;gap:18px;">
-      ${steps.map((s,i) => {
-        const rate = i===0 ? 100 : steps[i-1].cnt > 0 ? (s.cnt/steps[i-1].cnt*100).toFixed(0) : 0;
-        return `<div>
-          <div style="display:flex;justify-content:space-between;margin-bottom:5px;">
-            <span style="font-size:12px;">${s.label}</span>
-            <span style="font-family:'DM Mono',monospace;font-size:11px;color:${s.color};">${s.cnt}명 · ${rate}%</span>
+  document.getElementById('funnelPanel').innerHTML = `
+    <div class="funnel">${steps.map((s,i)=>{
+      const rate = i===0?100:steps[i-1].cnt>0?(s.cnt/steps[i-1].cnt*100).toFixed(0):0;
+      const rc   = rate>=50?'high':rate>=20?'mid':'low';
+      return `<div>
+        <div class="f-top">
+          <span class="f-label">${s.label}</span>
+          <div class="f-right">
+            <span class="f-cnt" style="color:${s.color}">${s.cnt}명</span>
+            <span class="pill ${rc}">${rate}%</span>
           </div>
-          <div class="bar-track"><div class="bar-fill" style="background:${s.color};width:${(s.cnt/total*100).toFixed(1)}%"></div></div>
+        </div>
+        <div class="bar-bg"><div class="bar-fg" style="background:${s.color};width:${(s.cnt/total*100).toFixed(1)}%"></div></div>
+      </div>`;
+    }).join('')}</div>`;
+}
+
+function renderDevice() {
+  const base   = allEvents.filter(filterDate);
+  const types  = ['fabric_click','modal_image_swipe','modal_close','consult_click','form_submit'];
+  const labels = { fabric_click:'카드 클릭', modal_image_swipe:'이미지 스와이프', modal_close:'모달 닫기', consult_click:'스와치 담기', form_submit:'폼 제출' };
+  document.getElementById('devicePanel').innerHTML = `
+    <div style="display:flex;flex-direction:column;gap:16px;">
+      ${types.map(t=>{
+        const mo    = base.filter(e=>e.event_type===t&&e.device_type==='MO').length;
+        const pc    = base.filter(e=>e.event_type===t&&e.device_type==='PC').length;
+        const total = mo+pc||1;
+        const moPct = ((mo/total)*100).toFixed(0);
+        const pcPct = ((pc/total)*100).toFixed(0);
+        return `<div>
+          <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+            <span style="font-size:13px;font-weight:500;">${labels[t]}</span>
+            <span style="font-family:'DM Mono',monospace;font-size:12px;color:var(--sub);">${mo+pc}</span>
+          </div>
+          <div class="split-bar">
+            <div class="split-mo" style="width:${moPct}%"></div>
+            <div class="split-pc" style="width:${pcPct}%"></div>
+          </div>
+          <div class="split-labels">
+            <span style="color:var(--mo)">MO ${mo} (${moPct}%)</span>
+            <span style="color:var(--pc)">PC ${pc} (${pcPct}%)</span>
+          </div>
         </div>`;
       }).join('')}
+    </div>`;
+}
+
+function renderDeviceFabric() {
+  const base = allEvents.filter(filterDate);
+  const moM={}, pcM={};
+  base.filter(e=>e.event_type==='fabric_click').forEach(e=>{
+    if(e.device_type==='MO') moM[e.fabric_name]=(moM[e.fabric_name]||0)+1;
+    if(e.device_type==='PC') pcM[e.fabric_name]=(pcM[e.fabric_name]||0)+1;
+  });
+  const all = [...new Set([...Object.keys(moM),...Object.keys(pcM)])];
+  const sorted = all.map(n=>({ name:n, mo:moM[n]||0, pc:pcM[n]||0, total:(moM[n]||0)+(pcM[n]||0) })).sort((a,b)=>b.total-a.total).slice(0,8);
+  const max = sorted[0]?.total||1;
+  document.getElementById('deviceFabricPanel').innerHTML = `
+    <div style="display:flex;flex-direction:column;gap:12px;">
+      ${sorted.map(x=>`
+        <div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;">
+            <span style="font-size:13px;">${x.name}</span>
+            <div style="display:flex;gap:10px;">
+              <span style="font-family:'DM Mono',monospace;font-size:11px;font-weight:600;color:var(--mo);">MO ${x.mo}</span>
+              <span style="font-family:'DM Mono',monospace;font-size:11px;font-weight:600;color:var(--pc);">PC ${x.pc}</span>
+            </div>
+          </div>
+          <div class="split-bar" style="height:6px;">
+            <div class="split-mo" style="width:${x.total>0?(x.mo/x.total*100).toFixed(1):0}%"></div>
+            <div class="split-pc" style="width:${x.total>0?(x.pc/x.total*100).toFixed(1):0}%"></div>
+          </div>
+        </div>`).join('')}
     </div>`;
 }
 
